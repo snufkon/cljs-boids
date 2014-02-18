@@ -2,7 +2,7 @@
 
 (def FPS 30)
 (def SCREEN_SIZE 500)
-(def NUM_BOIDS 100)
+(def NUM_BOIDS 500)
 (def BOID_SIZE 5)
 (def MAX_SPEED 7)
 (def canvas (.getElementById js/document "world"))
@@ -118,12 +118,23 @@
   (draw)
   (move))
 
+(defn calc-time [func name]
+  (.time js/console name)
+  (loop [i 0]
+    (when (< i NUM_BOIDS)
+      (func i)
+      (recur (inc i))))
+  (.timeEnd js/console name))
+
 (defn init []
   (set! (.-width canvas) SCREEN_SIZE)
   (set! (.-height canvas) SCREEN_SIZE)
   (set! (.-fillStyle ctx) "rgba(33, 33, 33, 0.8)")
 
   (make-boids)
-  (js/setInterval simulate (/ 1000 FPS)))
+  (calc-time rule1 "rule1")
+  (calc-time rule2 "rule2")
+  (calc-time rule3 "rule3")
+  (calc-time restrict "restrict"))
 
 (set! (.-onload js/window) init)
