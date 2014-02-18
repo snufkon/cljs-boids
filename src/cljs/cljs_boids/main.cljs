@@ -118,12 +118,29 @@
   (draw)
   (move))
 
+(defn make-test-boids []
+  (aset boids 0 (js-obj "x" 10 "y" 10 "vx" 0 "vy" 0))
+  (aset boids 1 (js-obj "x" 100 "y" 100 "vx" 0 "vy" 0))
+  (aset boids 2 (js-obj "x" 200 "y" 10 "vx" 0 "vy" 0)))
+
+(defn debug-print [i]
+  (.log js/console (aget boids i)))
+
+(defn debug-all-print []
+  (loop [i 0]
+    (when (< i (.-length boids))
+      (debug-print i)
+      (recur (inc i)))))
+
 (defn init []
   (set! (.-width canvas) SCREEN_SIZE)
   (set! (.-height canvas) SCREEN_SIZE)
   (set! (.-fillStyle ctx) "rgba(33, 33, 33, 0.8)")
 
-  (make-boids)
-  (js/setInterval simulate (/ 1000 FPS)))
+  (make-test-boids)
+  (debug-all-print)
+  (doall (repeatedly 1000 #(simulate)))
+  (.log js/console "finish simulate!")
+  (debug-all-print))
 
 (set! (.-onload js/window) init)
