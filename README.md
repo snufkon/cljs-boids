@@ -6,6 +6,10 @@ I rewrote following JavaScript boid program by CloureScript.
 
 http://ottati.hatenablog.com/entry/2013/09/28/125953
 
+## Demo
+
+see: http://snufkon.github.io/cljs-boids/
+
 ## Usage
 
     git clone https://github.com/snufkon/cljs-boids
