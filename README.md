@@ -8,8 +8,9 @@ http://ottati.hatenablog.com/entry/2013/09/28/125953
 
 ## Usage
 
-git clone https://github.com/snufkon/cljs-boids
-open resources/public/index.html
+`git clone https://github.com/snufkon/cljs-boids`
+
+`open resources/public/index.html`
 
 ## License
 
