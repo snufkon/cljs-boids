@@ -1,10 +1,12 @@
-(ns cljs-boids.main)
+(ns cljs-boids.main
+  (:require [goog.uri.utils :as utils]))
 
 (def FPS 30)
 (def SCREEN_SIZE 500)
-(def NUM_BOIDS 100)
 (def BOID_SIZE 5)
 (def MAX_SPEED 7)
+(def NUM_BOIDS
+  (or (utils/getParamValue (.-href (.-location js/window)) "n") 100))
 (def canvas (.getElementById js/document "world"))
 (def ctx (.getContext canvas "2d"))
 (def boids (array))
