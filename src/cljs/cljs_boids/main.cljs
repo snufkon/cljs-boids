@@ -136,10 +136,16 @@
   (set! (.-height canvas) @screen-height))
 
 (defn init []
-  (resize)
+  (if (== js/window (.-parent js/window))
+    (do ;; when page is displayed directly
+      (resize)
+      (set! (.-onresize js/window) resize))
+    (do ;; when page is displayed by iframe
+      (set! (.-width canvas) @screen-width)
+      (set! (.-height canvas) @screen-height)))
+
   (set! (.-fillStyle ctx) "rgba(33, 33, 33, 0.8)")
   (make-boids)
   (js/setInterval simulate (/ 1000 FPS)))
 
 (set! (.-onload js/window) init)
-(set! (.-onresize js/window) resize)
