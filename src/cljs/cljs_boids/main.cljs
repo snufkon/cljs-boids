@@ -2,9 +2,12 @@
   (:require [goog.uri.utils :as utils]))
 
 (def FPS 30)
-(def SCREEN_SIZE 500)
 (def BOID_SIZE 5)
 (def MAX_SPEED 7)
+
+(def screen-width (atom 500))
+(def screen-height (atom 500))
+
 (def NUM_BOIDS
   (or (utils/getParamValue (.-href (.-location js/window)) "n") 100))
 (def canvas (.getElementById js/document "world"))
@@ -14,8 +17,8 @@
 (defn make-boids []
   (loop [i 0]
     (when (< i NUM_BOIDS)
-      (aset boids i (js-obj "x" (* (js/Math.random) SCREEN_SIZE)
-                            "y" (* (js/Math.random) SCREEN_SIZE)
+      (aset boids i (js-obj "x" (* (js/Math.random) @screen-width)
+                            "y" (* (js/Math.random) @screen-height)
                             "vx" 0
                             "vy" 0))
       (recur (inc i)))))
@@ -86,15 +89,15 @@
         (*= b "vy" r)))
 
     (if (or (and (< (aget b "x") 0) (< (aget b "vx") 0))
-            (and (> (aget b "x") SCREEN_SIZE) (> (aget b "vx") 0)))
+            (and (> (aget b "x") @screen-width) (> (aget b "vx") 0)))
       (*= b "vx" -1))
 
     (if (or (and (< (aget b "y") 0) (< (aget b "vy") 0))
-            (and (> (aget b "y") SCREEN_SIZE) (> (aget b "vy") 0)))
+            (and (> (aget b "y") @screen-height) (> (aget b "vy") 0)))
       (*= b "vy" -1))))
 
 (defn draw []
-  (.clearRect ctx 0 0 SCREEN_SIZE SCREEN_SIZE)
+  (.clearRect ctx 0 0 @screen-width @screen-height)
   (loop [i 0]
     (when (< i (.-length boids))
       (.fillRect ctx
@@ -120,12 +123,23 @@
   (draw)
   (move))
 
-(defn init []
-  (set! (.-width canvas) SCREEN_SIZE)
-  (set! (.-height canvas) SCREEN_SIZE)
-  (set! (.-fillStyle ctx) "rgba(33, 33, 33, 0.8)")
+(defn get-client-width []
+  (.-clientWidth (.-documentElement js/document)))
 
+(defn get-client-height []
+  (.-clientHeight (.-documentElement js/document)))
+
+(defn resize []
+  (reset! screen-width (get-client-width))
+  (reset! screen-height (get-client-height))
+  (set! (.-width canvas) @screen-width)
+  (set! (.-height canvas) @screen-height))
+
+(defn init []
+  (resize)
+  (set! (.-fillStyle ctx) "rgba(33, 33, 33, 0.8)")
   (make-boids)
   (js/setInterval simulate (/ 1000 FPS)))
 
 (set! (.-onload js/window) init)
+(set! (.-onresize js/window) resize)
